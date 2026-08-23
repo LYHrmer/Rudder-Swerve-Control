@@ -50,7 +50,7 @@
 
 这是从实车工程中抽取的控制层，不是开箱即烧录的完整固件。移植时须由使用者提供 STM32 HAL、FreeRTOS、IMU/云台反馈、裁判系统数据和电机 CAN 驱动；详见 [移植说明](docs/porting.md)。
 
-相关文档：[控制算法](docs/control-algorithm.md)、[软件架构](docs/architecture.md)、[参数说明](docs/parameters.md)、[测试清单](docs/testing.md)。
+相关文档：[控制算法](docs/control-algorithm.md)、[软件架构](docs/architecture.md)、[参数说明](docs/parameters.md)、[测试清单](docs/testing.md)、[RoboMaster 论坛开源帖](docs/rm-forum-submission.md)。
 
 ## 控制链路
 
