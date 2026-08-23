@@ -499,20 +499,28 @@ static void chassis_set_contorl(chassis_move_t* chassis_move_control) {
  */
 static void chassic_rudder_preliminary_A_S_solution(chassis_move_t* chassic_rudder_preliminary_solution) {
 	float vx_set, vy_set, vw_set = 0.0f;
+	const float sin_cos_45 = 0.70710678118f;
+	float rotational_speed;
+	float vx_plus, vx_minus, vy_plus, vy_minus;
 	vx_set = chassic_rudder_preliminary_solution->vx_set;
 	vy_set = chassic_rudder_preliminary_solution->vy_set;
 	vw_set = chassic_rudder_preliminary_solution->wz_set;
+	rotational_speed = vw_set * sin_cos_45;
+	vx_plus = vx_set + rotational_speed;
+	vx_minus = vx_set - rotational_speed;
+	vy_plus = vy_set + rotational_speed;
+	vy_minus = vy_set - rotational_speed;
 	// 根据设置速度求轮电机转速//线速度
-	chassic_rudder_preliminary_solution->Forward_L.wheel_speed = sqrt((pow((vy_set + vw_set * arm_cos_f32(DEG2R(45))), 2) + pow((vx_set + vw_set * arm_sin_f32(DEG2R(45))), 2)));
-	chassic_rudder_preliminary_solution->Back_L.wheel_speed = sqrt((pow((vy_set - vw_set * arm_cos_f32(DEG2R(45))), 2) + pow((vx_set + vw_set * arm_sin_f32(DEG2R(45))), 2)));
-	chassic_rudder_preliminary_solution->Back_R.wheel_speed = sqrt((pow((vy_set - vw_set * arm_cos_f32(DEG2R(45))), 2) + pow((vx_set - vw_set * arm_sin_f32(DEG2R(45))), 2)));
-	chassic_rudder_preliminary_solution->Forward_R.wheel_speed = -sqrt((pow((vy_set + vw_set * arm_cos_f32(DEG2R(45))), 2) + pow((vx_set - vw_set * arm_sin_f32(DEG2R(45))), 2))); // 10.19
+	chassic_rudder_preliminary_solution->Forward_L.wheel_speed = sqrtf(vy_plus * vy_plus + vx_plus * vx_plus);
+	chassic_rudder_preliminary_solution->Back_L.wheel_speed = sqrtf(vy_minus * vy_minus + vx_plus * vx_plus);
+	chassic_rudder_preliminary_solution->Back_R.wheel_speed = sqrtf(vy_minus * vy_minus + vx_minus * vx_minus);
+	chassic_rudder_preliminary_solution->Forward_R.wheel_speed = -sqrtf(vy_plus * vy_plus + vx_minus * vx_minus); // 10.19
 	// 根据速度反三角函数求角度                                                                                                                              //逆时针旋转
 
-	chassic_rudder_preliminary_solution->Forward_L.rudder_angle = atan2((vy_set + vw_set * arm_cos_f32(DEG2R(45))), (vx_set + vw_set * arm_sin_f32(DEG2R(45)))); // 0  3
-	chassic_rudder_preliminary_solution->Back_L.rudder_angle = atan2((vy_set - vw_set * arm_cos_f32(DEG2R(45))), (vx_set + vw_set * arm_sin_f32(DEG2R(45))));	   // 1  2
-	chassic_rudder_preliminary_solution->Back_R.rudder_angle = atan2((vy_set - vw_set * arm_cos_f32(DEG2R(45))), (vx_set - vw_set * arm_sin_f32(DEG2R(45))));
-	chassic_rudder_preliminary_solution->Forward_R.rudder_angle = atan2((vy_set + vw_set * arm_cos_f32(DEG2R(45))), (vx_set - vw_set * arm_sin_f32(DEG2R(45))));
+	chassic_rudder_preliminary_solution->Forward_L.rudder_angle = atan2f(vy_plus, vx_plus); // 0  3
+	chassic_rudder_preliminary_solution->Back_L.rudder_angle = atan2f(vy_minus, vx_plus);    // 1  2
+	chassic_rudder_preliminary_solution->Back_R.rudder_angle = atan2f(vy_minus, vx_minus);
+	chassic_rudder_preliminary_solution->Forward_R.rudder_angle = atan2f(vy_plus, vx_minus);
 
 	// 求编码值变量
 	chassic_rudder_preliminary_solution->Forward_L.ecd_add = chassic_rudder_preliminary_solution->Forward_L.rudder_angle / Motor_Ecd_to_Rad;
@@ -536,7 +544,7 @@ static void chassis_speed_control_set(chassis_move_t* chassis_speed_set) {
 	chassis_speed_set->motor_chassis[0].speed_set = chassis_speed_set->Forward_L.wheel_speed * chassis_speed_set->Forward_L.Judge_Speed_Direction * chassis_speed_set->Forward_L.Judge_Speed_cosk;
 	chassis_speed_set->motor_chassis[1].speed_set = chassis_speed_set->Forward_R.wheel_speed * chassis_speed_set->Forward_R.Judge_Speed_Direction * chassis_speed_set->Forward_R.Judge_Speed_cosk;
 	chassis_speed_set->motor_chassis[2].speed_set = chassis_speed_set->Back_L.wheel_speed * chassis_speed_set->Back_L.Judge_Speed_Direction * chassis_speed_set->Back_L.Judge_Speed_cosk;
-	chassis_speed_set->motor_chassis[3].speed_set = chassis_speed_set->Back_R.wheel_speed * chassis_speed_set->Back_R.Judge_Speed_Direction * chassis_speed_set->Back_R.Judge_Speed_cosk;;
+	chassis_speed_set->motor_chassis[3].speed_set = chassis_speed_set->Back_R.wheel_speed * chassis_speed_set->Back_R.Judge_Speed_Direction * chassis_speed_set->Back_R.Judge_Speed_cosk;
 
 	float max_vector = 0.f, vector_rate = 0.f;
 
@@ -639,7 +647,8 @@ static void Rudder_motor_relative_angle_control(Rudder_Motor_t* chassis_motor) {
 		angle = HALF_PI;
 	else if (fabs(angle) < 0.05f && chassis_move.chassis_motor_mode != CHASSIS_VECTOR_SPIN)
 		angle = 0; //防止因极小的误差导致四个轮子转速不一样
-	chassis_motor->Judge_Speed_cosk = arm_cos_f32(angle) * arm_cos_f32(angle) * arm_cos_f32(angle) * arm_cos_f32(angle) * arm_cos_f32(angle);
+	const float cos_angle = arm_cos_f32(angle);
+	chassis_motor->Judge_Speed_cosk = cos_angle * cos_angle * cos_angle;
 
 	RUDDER_MOTOR_PID_CONTROL(chassis_motor);
 }
