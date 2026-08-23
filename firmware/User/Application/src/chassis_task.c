@@ -64,7 +64,7 @@ static uint16_t cnt;
 static uint8_t cnt_flag;
 /**
  * @brief          返回舵电机 6020电机数据指针
- * @author         XQL
+ * @author         LYH
  * @param[in]      none
  * @retval         电机数据指针
  */
@@ -192,8 +192,7 @@ void chassis_task(void const* pvParameters) {
 
 /**
  * @brief          初始化底盘数据
- * @author         XQL 1.0
- *                 LYH 2.0
+ * @author         LYH
  * @param[in]      chassis_move_init：底盘数据指针
  * @retval         none
  */
@@ -247,8 +246,7 @@ static void chassis_init(chassis_move_t* chassis_move_init) {
 
 /**
  * @brief          更新底盘数据
- * @author         XQL  1.0
- *                 LYH  2.0
+ * @author         LYH
  * @param[in]      chassis_move_update：底盘数据指针
  * @retval         none
  */
@@ -431,15 +429,12 @@ static void chassis_set_contorl(chassis_move_t* chassis_move_control) {
 	else if (chassis_move_control->chassis_motor_mode == CHASSIS_VECTOR_SPIN) // 小陀螺模式
 	{
 		float sin_yaw = 0.0f, cos_yaw = 0.0f;
-		// static float temp_wz = 25.0f;
 		static float temp_wz = 15.0f;
-		// static float temp_wz = PI;
 		relative_angle = chassis_move_control->gimbal_data.relative_angle;
 
 		relative_angle = rad_format(relative_angle);
 
-		//		//小陀螺角度补偿
-		//	  relative_angle += 0.007f;
+		//小陀螺角度补偿
 		relative_angle += chassis_move_control->wz * 0.005f;
 
 		sin_yaw = arm_sin_f32((relative_angle));
@@ -451,17 +446,13 @@ static void chassis_set_contorl(chassis_move_t* chassis_move_control) {
 		chassis_move_control->wz_set = -temp_wz;
 
 		if (fabs(chassis_move_control->vx_set_CANsend) > 1.0f) {
-			//			chassis_move_control->wz_set *= 0.1f;
 			chassis_move_control->vx_set *= 0.4f;
 			chassis_move_control->vy_set *= 0.4f;
-			// chassis_move_control->wz_set *= 2.0f;//0.2
 			chassis_move_control->wz_set *= 2.0f;//0.2
 		}
 		else if (fabs(chassis_move_control->vy_set_CANsend) > 1.0f) {
-			//			chassis_move_control->wz_set *= 0.1f;
 			chassis_move_control->vx_set *= 0.3f;
 			chassis_move_control->vy_set *= 0.3f;
-			// chassis_move_control->wz_set *= 2.0f;//0.2
 			chassis_move_control->wz_set *= 2.5f;//0.2
 		}
 		else // 当原地时，加大转速
@@ -491,10 +482,8 @@ static void chassis_set_contorl(chassis_move_t* chassis_move_control) {
 
 /**
  * @brief          轮，舵初步角度速度控制量解算
- * @author         XQL  1.0
- *                 LYH  2.0
+ * @author         LYH
  * @param[in]      chassic_rudder_preliminary_solution：底盘数据指针
- * @note         	进行了略微的重构
  * @retval			void
  */
 static void chassic_rudder_preliminary_A_S_solution(chassis_move_t* chassic_rudder_preliminary_solution) {
@@ -613,7 +602,7 @@ static void Rudder_motor_relative_angle_control(Rudder_Motor_t* chassis_motor) {
 			chassis_motor->ecd_set = chassis_motor->rudder_motor_measure->ecd;
 		}
 		else {
-			//chassis_motor->ecd_set =chassis_motor->ecd_zero_set;
+			//舵电机卸力
 			chassis_motor->ecd_set = chassis_motor->rudder_motor_measure->ecd;
 		}
 	}
