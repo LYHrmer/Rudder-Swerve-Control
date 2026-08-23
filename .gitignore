@@ -7,3 +7,5 @@ Release/
 *.bin
 *.hex
 *.map
+/docs/rm-forum-submission.md
+/assets/images/contact-wechat-qr.jpg
