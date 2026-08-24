@@ -1,6 +1,6 @@
 # Rudder Swerve Control
 
-面向 RoboMaster 步兵底盘的四舵轮控制核心。该仓库只公开底盘运动学、控制状态机、CAN 电机接口及其必要算法，不包含整车业务、上位机、UI、裁判系统或完整板级工程。
+面向 RoboMaster 舵轮底盘的控制开源。该仓库只公开底盘运动学、控制状态机、CAN 电机接口及其必要算法，不包含整车业务、上位机、UI、裁判系统或完整板级工程。
 
 ## 项目背景与开源初衷
 
@@ -12,7 +12,7 @@
 
 ## 实车与赛季记录
 
-| 2023：舵轮底盘实车 | 2024：联盟赛现场 |
+| 2023：舵轮底盘实车 | 2024：舵轮底盘实车 |
 | --- | --- |
 | ![2023 年舵轮底盘实车](assets/images/2023-swerve.jpg) | ![2024 年联盟赛舵轮底盘](assets/images/2024-swerve.jpg) |
 
@@ -92,14 +92,12 @@ flowchart LR
 
 ## 演示与参考资料
 
-- [视频 1](https://www.bilibili.com/video/BV13p4y177HZ/)
-- [视频 2](https://www.bilibili.com/video/BV1YET3zsEG1/)
-- [视频 3](https://www.bilibili.com/video/BV1HXT4z7EcB/)
-- [视频 4](https://www.bilibili.com/video/BV11utSzqE4z/)
-- [视频 5](https://www.bilibili.com/video/BV1BF7NzzELk/)
-- [视频 6](https://www.bilibili.com/video/BV1o5HfzYEaa/)
-
-以上链接仅作演示或参考资料；发布前请标注每个视频的作者、拍摄日期、对应固件版本和测试项目。
+- [舵轮解算](https://www.bilibili.com/video/BV13p4y177HZ/)
+- [飞坡视频](https://www.bilibili.com/video/BV1YET3zsEG1/)
+- [对局效果](https://www.bilibili.com/video/BV1HXT4z7EcB/)
+- [余弦优化](https://www.bilibili.com/video/BV11utSzqE4z/)
+- [地形跨越](https://www.bilibili.com/video/BV1BF7NzzELk/)
+- [能量效果](https://www.bilibili.com/video/BV1o5HfzYEaa/)
 
 ## 致谢
 
